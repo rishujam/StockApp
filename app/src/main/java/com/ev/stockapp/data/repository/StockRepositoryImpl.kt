@@ -53,10 +53,16 @@ class StockRepositoryImpl @Inject constructor(
                 null
             }
             remoteListing?.let { listing ->
-                emit(Resource.Success(listing))
-                emit(Resource.Loading(false))
                 dao.clearCompanyListing()
-                dao.insertCompanyListings(listing.map { it.toCompanyListingEntity() })
+                dao.insertCompanyListings(
+                    listing.map { it.toCompanyListingEntity() }
+                )
+                emit(Resource.Success(
+                    data = dao
+                        .searchCompanyListing("")
+                        .map { it.toCompanyListing() }
+                ))
+                emit(Resource.Loading(false))
             }
         }
     }
