@@ -5,7 +5,9 @@ import com.ev.stockapp.data.local.StockDatabase
 import com.ev.stockapp.data.mappers.toCompanyListing
 import com.ev.stockapp.data.mappers.toCompanyListingEntity
 import com.ev.stockapp.data.remote.StockApi
+import com.ev.stockapp.domain.models.CompanyInfo
 import com.ev.stockapp.domain.models.CompanyListing
+import com.ev.stockapp.domain.models.IntradayInfo
 import com.ev.stockapp.domain.repository.StockRepository
 import com.ev.stockapp.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -17,9 +19,9 @@ import javax.inject.Singleton
 
 @Singleton
 class StockRepositoryImpl @Inject constructor(
-    val api: StockApi,
-    val db: StockDatabase,
-    val companyListingsParser: CSVParser<CompanyListing>
+    private val api: StockApi,
+    private val db: StockDatabase,
+    private val companyListingsParser: CSVParser<CompanyListing>
 ): StockRepository {
 
     private val dao = db.dao
@@ -65,5 +67,26 @@ class StockRepositoryImpl @Inject constructor(
                 emit(Resource.Loading(false))
             }
         }
+    }
+
+    override suspend fun getIntradayInfo(symbol: String): Resource<List<IntradayInfo>> {
+        return try {
+            val response = api.getIntradayInfo(symbol)
+
+        }catch (e: IOException) {
+            e.printStackTrace()
+            Resource.Error(
+                message = "Couldn't load intraday info "
+            )
+        }catch (e: HttpException) {
+            e.printStackTrace()
+            Resource.Error(
+                message = "Couldn't load intraday info "
+            )
+        }
+    }
+
+    override suspend fun getCompanyInfo(symbol: String): Resource<CompanyInfo> {
+        TODO("Not yet implemented")
     }
 }
